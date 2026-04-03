@@ -2,7 +2,19 @@
 import { GoogleGenAI } from "@google/genai";
 import { Ball } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (!ai) {
+    const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is missing. AI commentary will be disabled.");
+      return null;
+    }
+    ai = new GoogleGenAI({ apiKey });
+  }
+  return ai;
+};
 
 export const getRaceCommentary = async (balls: Ball[], event?: string): Promise<string> => {
   const sortedBalls = [...balls].sort((a, b) => b.y - a.y);
@@ -21,8 +33,11 @@ export const getRaceCommentary = async (balls: Ball[], event?: string): Promise<
     Make it sound like an intense e-sports broadcast. Use the names of the balls.
   `;
 
+  const aiInstance = getAI();
+  if (!aiInstance) return "경기가 점점 더 치열해지고 있습니다!";
+
   try {
-    const response = await ai.models.generateContent({
+    const response = await aiInstance.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
