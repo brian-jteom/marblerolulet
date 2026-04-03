@@ -1,0 +1,5 @@
+{
+  "name": "마블룰렛 짝퉁",
+  "description": "A high-stakes vertical ball racing game where physics-based orbs navigate procedurally generated obstacle courses. Features a dynamic camera following the leader and real-time AI sports commentary.",
+  "requestFramePermissions": []
+}
